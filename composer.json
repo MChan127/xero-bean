@@ -1,0 +1,6 @@
+{
+    "require": {
+        "calcinai/xero-php": "^1.9",
+        "vlucas/phpdotenv": "^3.6"
+    }
+}
