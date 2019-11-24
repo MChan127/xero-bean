@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter} from "react-router-dom";
 import {Link} from "react-router-dom";
 
-import './assets/app.css';
+import './assets/app.scss';
 
 import Router from "./Router";
 
@@ -17,12 +17,14 @@ class App extends Component {
         };
     }
 
+    updateUser(user) {
+        this.setState({user});
+    }
+
     render() {
         return (
             <div>
-                <Router user={this.state.user} />
-                
-                home
+                <Router user={this.state.user} updateUser={this.updateUser.bind(this)} />
             </div>
         );
     }

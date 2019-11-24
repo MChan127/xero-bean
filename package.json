@@ -26,6 +26,7 @@
   },
   "scripts": {
     "dev": "webpack-dev-server",
+    "watch": "webpack --watch --mode development",
     "build": "webpack --mode production"
   },
   "dependencies": {

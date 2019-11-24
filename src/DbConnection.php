@@ -14,6 +14,10 @@ class DbConnection {
     private function __construct() {
         $this->openConnection();
     }
+
+    public function __destruct() {
+        $this->closeConnection();
+    }
     
     public function openConnection() {
         $dbuser = $_ENV['DB_USER'];

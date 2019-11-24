@@ -1,15 +1,12 @@
 <?php
-require_once 'vendor/autoload.php';
-
-$dotenv = Dotenv\Dotenv::create(dirname(__FILE__) . '/config', 'database.env');
-$dotenv->load();
+require_once 'src/common.php';
 
 // check user auth
 // if user not logged in, redirect to login page
 // TODO
 
-$API_URL = "bean/src/";
-$authUser = json_encode(array());
+$API_URL = "src/";
+$authUser = json_encode($authUser->getUser() ?? null);
 ?>
 <!doctype html>
 <html lang="EN">
