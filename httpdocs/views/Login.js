@@ -61,7 +61,7 @@ class Login extends Component {
             <div className="page login container">
                 <div className="row">
                     <div className="login-form col-md-6 offset-md-3">
-                        <p>Welcome to Xero-Beanworks.<br/>
+                        <p>Welcome to a Xero Integration.<br/>
                         Please log in with your given username and password.</p>
                         
                         <div className="form-group">

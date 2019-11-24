@@ -2,7 +2,7 @@
 
 class Xero_Accounts extends Xero {
     function __construct() {
-        super();
+        parent::__construct();
 
         $this->dataType = 'Accounting\\Account';
     }

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter, HashRouter} from "react-router-dom";
 import {Link} from "react-router-dom";
 
 import './assets/app.scss';
@@ -30,4 +30,4 @@ class App extends Component {
     }
 }
 
-ReactDOM.render(<BrowserRouter basename="/bean"><App /></BrowserRouter>, document.getElementById('app'));
+ReactDOM.render(<HashRouter><App /></HashRouter>, document.getElementById('app'));

@@ -4,9 +4,9 @@ use XeroPHP\Application\PrivateApplication;
 class Xero {
     private $config;
 
-    private $xero;
+    protected $xero;
 
-    private $dataType;
+    protected $dataType;
 
     function __construct() {
         $pemFile = ROOT_DIR . 'private/xero/privatekey.pem';
@@ -24,9 +24,31 @@ class Xero {
         $this->_xero = new PrivateApplication($config);
     }
     
-    public function getData() {
-        $data = $this->_xero->load($this->dataType)->execute();
+    public function getData($page = null) {
+        try {
+            if (!empty($page)) {
+                $data = $this->_xero->load($this->dataType)->page($page)->execute();
+            } else {
+                $data = $this->_xero->load($this->dataType)->execute();
+            }
+        } catch (NotFoundException $exception) {
+            return array(
+                'status' => 'error',
+                'msg' => 'Could not fetch data'  
+            );
+        } catch (RateLimitExceededException $exception) {
+            return array(
+                'status' => 'error',
+                'msg' => 'Rate limit exceeded'  
+            );
+        }
 
-        return $data;
+        return array(
+            'status' => 'success',
+            'msg' => !is_null($page) ?
+                sprintf('Data was successfully fetched for page %s of %s data type', $page, $this->dataType) :
+                sprintf('Data was successfully fetched for %s data type', $this->dataType),
+            'data' => $data
+        );
     }
 }

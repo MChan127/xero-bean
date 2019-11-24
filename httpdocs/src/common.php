@@ -1,6 +1,6 @@
 <?php
- //ini_set('display_errors', 1);
- //error_reporting(E_ALL);
+//  ini_set('display_errors', 1);
+//  error_reporting(E_ALL);
 
 
 define("SRC_DIR", dirname(__FILE__) . '/');
@@ -16,6 +16,10 @@ $htmlSanitizer = HtmlSanitizer\Sanitizer::create(['extensions' => ['basic']]);
 
 require_once SRC_DIR . 'classes/AuthUser.php';
 require_once SRC_DIR . 'classes/DbConnection.php';
+
+require_once SRC_DIR . 'classes/Xero.php';
+require_once SRC_DIR . 'classes/Xero/Accounts.php';
+require_once SRC_DIR . 'classes/Xero/Contacts.php';
 
 $db_dotenv = Dotenv\Dotenv::create(ROOT_DIR . 'config', 'database.env');
 $db_dotenv->load();
