@@ -12,8 +12,12 @@ class Login extends Component {
 
     render() {
         return (
-            <div>
-                <p>login</p>
+            <div class="page--login container">
+                <div class="row">
+                    <div class="login col-md-4 col-offset-md-4">
+                        Login
+                    </div>
+                </div>
             </div>
         );
     }
