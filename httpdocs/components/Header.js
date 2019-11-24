@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTachometerAlt, faPiggyBank, faBuilding, faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faTachometerAlt, faPiggyBank, faBuilding, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { axiosPost } from "../util/global.js";
 

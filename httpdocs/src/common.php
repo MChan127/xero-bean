@@ -17,6 +17,7 @@ $htmlSanitizer = HtmlSanitizer\Sanitizer::create(['extensions' => ['basic']]);
 require_once SRC_DIR . 'classes/AuthUser.php';
 require_once SRC_DIR . 'classes/DbConnection.php';
 
+require_once SRC_DIR . 'classes/Cache.php';
 require_once SRC_DIR . 'classes/Xero.php';
 require_once SRC_DIR . 'classes/Xero/Accounts.php';
 require_once SRC_DIR . 'classes/Xero/Contacts.php';
