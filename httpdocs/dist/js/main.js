@@ -77,7 +77,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "/dist/js";
+/******/ 	__webpack_require__.p = "/httpdocs/dist/js";
 /******/
 /******/
 /******/ 	// Load entry module and return exports

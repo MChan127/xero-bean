@@ -36,6 +36,11 @@ class AuthUser {
         return $this->user;
     }
     public function setUser($user) {
+        global $htmlSanitizer;
+        
+        // sanitize
+        $user['username'] = $htmlSanitizer->sanitize($user['username']);
+
         $_SESSION['user'] = $user;
         $this->user = $user;
     }
@@ -78,7 +83,7 @@ class AuthUser {
                 }
                 
                 $this->setUser($user);
-                return $user;
+                return $this->getUser();
             } else {
                 return false;
             }

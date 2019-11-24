@@ -3,8 +3,8 @@ const path = require("path");
 module.exports = {
     entry: ["./httpdocs/App.js"],
     output: {
-        path: path.join(__dirname, 'dist/js'),
-        publicPath: '/dist/js',
+        path: path.join(__dirname, 'httpdocs/dist/js'),
+        publicPath: '/httpdocs/dist/js',
         filename: 'main.js'
     },
     module: {

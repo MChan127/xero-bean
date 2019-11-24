@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+// require_once realpath(dirname(__FILE__) . '/..') . '/src/common.php';
 require_once 'src/common.php';
 
 // check user auth
@@ -11,7 +14,7 @@ $authUser = json_encode($authUser->getUser() ?? null);
 <!doctype html>
 <html lang="EN">
 <head>
-    <title>Xero-Bean Integration</title>
+    <title>Xero Integration</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -22,7 +25,7 @@ $authUser = json_encode($authUser->getUser() ?? null);
 <body>
 
 <script type="text/javascript">
-const API_URL = "<?= $API_URL ?>";
+const API_URL = "src/";
 const authUser = <?= $authUser ?>;
 </script>
 

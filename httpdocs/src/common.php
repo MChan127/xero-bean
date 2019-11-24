@@ -4,7 +4,8 @@
 
 
 define("SRC_DIR", dirname(__FILE__) . '/');
-define("ROOT_DIR", realpath(dirname(__FILE__) . '/..') . '/');
+define("HTTP_DIR", realpath(dirname(__FILE__) . '/../') . '/');
+define("ROOT_DIR", realpath(dirname(__FILE__) . '/../../') . '/');
 
 
 // require composer packages
@@ -13,11 +14,15 @@ require_once ROOT_DIR . 'vendor/autoload.php';
 $htmlSanitizer = HtmlSanitizer\Sanitizer::create(['extensions' => ['basic']]);
 
 
-require_once SRC_DIR . 'AuthUser.php';
-require_once SRC_DIR . 'DbConnection.php';
+require_once SRC_DIR . 'classes/AuthUser.php';
+require_once SRC_DIR . 'classes/DbConnection.php';
 
-$dotenv = Dotenv\Dotenv::create(ROOT_DIR . 'config', 'database.env');
-$dotenv->load();
+$db_dotenv = Dotenv\Dotenv::create(ROOT_DIR . 'config', 'database.env');
+$db_dotenv->load();
+$general_dotenv = Dotenv\Dotenv::create(ROOT_DIR . 'config', 'general.env');
+$general_dotenv->load();
+$xero_dotenv = Dotenv\Dotenv::create(ROOT_DIR . 'private/xero', 'oauth.env');
+$xero_dotenv->load();
 
 // instantiate auth user module
 $authUser = \AuthUser::getInstance();
