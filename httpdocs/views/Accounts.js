@@ -16,7 +16,7 @@ class Accounts extends Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         axiosGet(
             API_URL + "get_xero_data.php?type=accounts",
             (res, errorHandler) => {
@@ -33,12 +33,13 @@ class Accounts extends Component {
 
     render() {
         return (
-            <div>
+            <div className="page accounts">
                 <Header user={this.props.user} updateUser={this.props.updateUser} />
+                <h1>Accounts</h1>
                 {
                     this.state.data && Object.keys(this.state.data).length > 0 ? 
                     <JsonDataTable rawData={this.state.data} name="Accounts" /> :
-                    null
+                    <div className="loading-animation"><div className="lds-circle"><div></div></div></div>
                 }
             </div>
         );

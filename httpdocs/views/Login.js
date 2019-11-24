@@ -58,11 +58,11 @@ class Login extends Component {
 
     render() {
         return (
-            <div className="page login container">
+            <div className="page login container-fluid">
                 <div className="row">
                     <div className="login-form col-md-6 offset-md-3">
-                        <p>Welcome to a Xero Integration.<br/>
-                        Please log in with your given username and password.</p>
+                        <h3>Xero Integration Tool</h3>
+                        <p>Please log in with your given username and password.</p>
                         
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
@@ -84,7 +84,6 @@ class Login extends Component {
                         <div className="form-group">
                             <label htmlFor="remember">Remember Me?</label>
                             <input type="checkbox" 
-                                className="form-control" 
                                 name="remember" 
                                 onChange={this.handleInputChange('checkbox').bind(this)}
                                 value={this.state.remember} />

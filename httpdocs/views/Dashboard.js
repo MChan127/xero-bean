@@ -14,9 +14,10 @@ class Dashboard extends Component {
 
     render() {
         return (
-            <div>
+            <div className="page dashboard">
                 <Header user={this.props.user} updateUser={this.props.updateUser} />
-                <p>dashboard</p>
+                <h1>Dashboard</h1>
+                <p>Click on "Accounts" or "Vendors" to view their respective data. </p>
             </div>
         );
     }

@@ -180,7 +180,9 @@ class JsonDataTable extends React.Component {
                         return stateObj;
                     })()
                 }, () => {
-                    jQuery('input[type="checkbox"]').prop('checked', false);
+                    document.querySelectorAll('input[type="checkbox"]').forEach((i) => {
+                        i.checked = false;
+                    });
                 });
             } else {
                 that.setState({
@@ -192,7 +194,9 @@ class JsonDataTable extends React.Component {
                         return stateObj;
                     })()
                 }, () => {
-                    jQuery('input[type="checkbox"]').prop('checked', true);
+                    document.querySelectorAll('input[type="checkbox"]').forEach((i) => {
+                        i.checked = true;
+                    });
                 });
             }
         };
@@ -203,24 +207,27 @@ class JsonDataTable extends React.Component {
 
         // select all and deselect all options
         filterCheckboxes.push((
-            <div className="col-md-4">
+            <div key="show-all-columns-btn" className="show-all-columns-btn col-md-3 col-sm-6">
                 <button className="btn btn-success" onClick={this.toggleColumns(false).bind(this)}>Show All</button>
             </div>
         ));
         filterCheckboxes.push((
-            <div className="col-md-4">
+            <div key="hide-all-columns-btn" className="hide-all-columns-btn col-md-3 col-sm-6">
                 <button className="btn btn-danger" onClick={this.toggleColumns(true).bind(this)}>Hide All</button>
             </div>
+        ));
+        filterCheckboxes.push((
+            <div key="table-filter-padding-col" className="table-filter-padding-col col-md-6 hidden-sm-down">&nbsp;</div>
         ));
 
         for (let key of this.state.columns) {
             filterCheckboxes.push((
-                <div className="col-md-3">
+                <div key={'json-toggle--' + key + '--div'} className="col-md-3">
                     <input key={'json-toggle--' + key} type="checkbox" 
                         onChange={this.toggleColumn(key).bind(this)}
                         defaultChecked={this.state.showColumns[key]}
                         value={this.state.showColumns[key]} /> 
-                    <span>{ key }</span>
+                    <span> &nbsp;{ key }</span>
                 </div>
             ));
         }

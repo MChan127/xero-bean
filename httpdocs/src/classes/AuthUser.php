@@ -25,7 +25,7 @@ class AuthUser {
     public function initUser() {
         $user = $_SESSION['user'] ?? null;
         if (!$user) { 
-            $user = $_SESSION['user'];
+            $user = $this->getUserFromSession();
         }
         if ($user) {
             $this->setUser($user);
@@ -60,37 +60,31 @@ class AuthUser {
     }
 
     public function login($username, $password, $remember = false) {
-        // check session first
-        if (!($user = $this->getUserFromSession())) {
-            $user = $this->_db->get("SELECT * FROM `users` WHERE `username` = ?;", array($username));
+        $user = $this->_db->get("SELECT * FROM `users` WHERE `username` = ?;", array($username));
 
-            if (!empty($user)) {
-                $user = $user[0];
-                $password_hash = $user['password_hash'];
-                if (!password_verify($password, $password_hash)) {
-                    return false;
-                }
-                unset($user['password_hash']);
-
-                // generate token and store in session if opted
-                if ($remember) {
-                    $_SESSION['usertoken'] = $token = bin2hex(openssl_random_pseudo_bytes(20)) . sprintf('_%s', $username);
-
-                    $lastId = $this->_db->insert("INSERT INTO `user_sessions` (`user_id`, `token`, `expiry_date`) 
-                        VALUES (?, ?, CURRENT_TIMESTAMP + INTERVAL 3 MONTH);",
-                        array($user['id'], $token)
-                    );
-                }
-                
-                $this->setUser($user);
-                return $this->getUser();
-            } else {
+        if (!empty($user)) {
+            $user = $user[0];
+            $password_hash = $user['password_hash'];
+            if (!password_verify($password, $password_hash)) {
                 return false;
             }
-        }
+            unset($user['password_hash']);
 
-        $this->setUser($user);
-        return $this->getUser();
+            // generate token and store in session if opted
+            if ($remember) {
+                $_SESSION['usertoken'] = $token = bin2hex(openssl_random_pseudo_bytes(20)) . sprintf('_%s', $username);
+
+                $lastId = $this->_db->insert("INSERT INTO `user_sessions` (`user_id`, `token`, `expiry_date`) 
+                    VALUES (?, ?, CURRENT_TIMESTAMP + INTERVAL 3 MONTH);",
+                    array($user['id'], $token)
+                );
+            }
+            
+            $this->setUser($user);
+            return $this->getUser();
+        } else {
+            return false;
+        }
     }
 
     public function logout() {

@@ -3,8 +3,8 @@ const path = require("path");
 module.exports = {
     entry: ["./httpdocs/App.js"],
     output: {
-        path: path.join(__dirname, 'httpdocs/dist/js'),
-        publicPath: '/httpdocs/dist/js',
+        path: path.join(__dirname, 'httpdocs/dist/'),
+        publicPath: '/httpdocs/dist/',
         filename: 'main.js'
     },
     module: {
@@ -27,6 +27,12 @@ module.exports = {
                         loader: 'sass-loader'
                     }
                 ]
+            },
+            {
+                test: /\.(jpe?g|png|gif|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/,
+                use: {
+                    loader: "url-loader?limit=100000"
+                }
             }
         ]
     }
