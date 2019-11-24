@@ -1,17 +1,35 @@
 import React, {Component, useEffect} from "react";
 import ReactDOM from "react-dom";
 
-const JsonDataTable = ({rawData, name}) => {
-    useEffect(() => {
-        // console.log('json data table', data);
-    }, [rawData]);
+class JsonDataTable extends React.Component {
+    constructor(props) {
+        super(props);
+
+        let {data, columns} = this.prepareData(props);
+
+        this.state = {
+            ...this.state,
+            name: props.name,
+            data,
+            columns,
+            showColumns: (function() {
+                let stateObj = {};
+                for (let key of columns) {
+                    stateObj[key] = true;
+                }
+                return stateObj;
+            })(),
+        };
+    }
     
-    let {data, columns} = sortDataAndGetColumns(rawData);
+    prepareData({rawData}) {
+        return this.sortDataAndGetColumns(rawData);
+    }
 
     // not all rows share the same data across each column
     // effectively there are a lot of empty cells, but to render a full table
     // we need _all_ of the columns in the data
-    function sortDataAndGetColumns(rawData) {
+    sortDataAndGetColumns(rawData) {
         let dataArr = [];
         let columnsArr = [];
 
@@ -36,10 +54,9 @@ const JsonDataTable = ({rawData, name}) => {
         }
 
         // however, this _still_ isn't good enough
-        // why? the first item could still itself be missing some columns that others
-        // might have
-
-        // so there's one more step in the process
+        // why? the first item could still itself be missing some columns that
+        // others might have
+        // so effectively, there's one more step in the process
         // further filter the rows using the most "common" columns we just found,
         // and find any extraneous columns among the whole data set again by
         // using map-filter-reduce
@@ -70,9 +87,11 @@ const JsonDataTable = ({rawData, name}) => {
         };
     }
 
-    function getTableHtml() {
+    getTableHtml() {
         let tableHeaderHtml = [];
         let tableRowsHtml = [];
+
+        let {data, columns} = this.state;
 
         let renderedTableHeader = false;
         for (let index in data) {
@@ -83,7 +102,9 @@ const JsonDataTable = ({rawData, name}) => {
             // instead of just in each item
             for (let key of columns) {
                 if (!renderedTableHeader) {
-                    tableHeaderHtml.push((<th className={"json-col--" + key} key={"th--" + key}>{key}</th>));
+                    tableHeaderHtml.push((<th style={{ display: this.state.showColumns[key] ? "table-cell": "none" }} 
+                        className={"json-col--" + key} 
+                        key={"th--" + key}>{key}</th>));
                 }
 
 
@@ -97,15 +118,17 @@ const JsonDataTable = ({rawData, name}) => {
                     val = '';
                 }
 
-                tableRowHtml.push(<td className={"json-col--" + key} key={"td--" + key + "--" + index}>{val}</td>);
+                tableRowHtml.push((<td style={{ display: this.state.showColumns[key] ? "table-cell": "none" }} 
+                    className={"json-col--" + key} 
+                    key={"td--" + key + "--" + index}>{val}</td>));
             }
             if (!renderedTableHeader) {
-                tableHeaderHtml = (<tr key={"tr--th"}>{tableHeaderHtml}</tr>);
+                tableHeaderHtml = ((<tr key={"tr--th"}>{tableHeaderHtml}</tr>));
                 renderedTableHeader = true;
             }
 
 
-            tableRowsHtml.push(<tr key={"tr--" + index}>{tableRowHtml}</tr>);
+            tableRowsHtml.push((<tr key={"tr--" + index}>{tableRowHtml}</tr>));
         }
 
         return (
@@ -120,10 +143,105 @@ const JsonDataTable = ({rawData, name}) => {
         );
     }
 
-    return (
-        <div className={"json-data-table " + name}>
-            {getTableHtml()}
-        </div>
-    );
+    toggleColumn(name) {
+        return function(event) {
+            if (!event.target.checked) {
+                this.setState(prevState => {
+                    return {
+                        showColumns: {
+                            ...prevState.showColumns,
+                            [name]: false,
+                        }
+                    };
+                });
+            } else {
+                this.setState(prevState => {
+                    return {
+                        showColumns: {
+                            ...prevState.showColumns,
+                            [name]: true,
+                        }
+                    };
+                });
+            }
+        };
+    }
+
+    toggleColumns(hideAll = false) {
+        const that = this;
+        return function(e) {
+            if (hideAll) {
+                that.setState({
+                    showColumns: (function() {
+                        let stateObj = {};
+                        for (let key of that.state.columns) {
+                            stateObj[key] = false;
+                        }
+                        return stateObj;
+                    })()
+                }, () => {
+                    jQuery('input[type="checkbox"]').prop('checked', false);
+                });
+            } else {
+                that.setState({
+                    showColumns: (function() {
+                        let stateObj = {};
+                        for (let key of that.state.columns) {
+                            stateObj[key] = true;
+                        }
+                        return stateObj;
+                    })()
+                }, () => {
+                    jQuery('input[type="checkbox"]').prop('checked', true);
+                });
+            }
+        };
+    }
+
+    getTableFilterOptions() {
+        let filterCheckboxes = [];
+
+        // select all and deselect all options
+        filterCheckboxes.push((
+            <div className="col-md-4">
+                <button className="btn btn-success" onClick={this.toggleColumns(false).bind(this)}>Show All</button>
+            </div>
+        ));
+        filterCheckboxes.push((
+            <div className="col-md-4">
+                <button className="btn btn-danger" onClick={this.toggleColumns(true).bind(this)}>Hide All</button>
+            </div>
+        ));
+
+        for (let key of this.state.columns) {
+            filterCheckboxes.push((
+                <div className="col-md-3">
+                    <input key={'json-toggle--' + key} type="checkbox" 
+                        onChange={this.toggleColumn(key).bind(this)}
+                        defaultChecked={this.state.showColumns[key]}
+                        value={this.state.showColumns[key]} /> 
+                    <span>{ key }</span>
+                </div>
+            ));
+        }
+
+        return (
+            <div className="json-table-filter-options container">
+                <div className="row">
+                    {filterCheckboxes}
+                </div>
+            </div>
+        )   
+    }
+
+    render() {
+        return (
+            <div className={"json-data-table " + this.state.name}>
+                {this.getTableFilterOptions.bind(this)()}
+
+                {this.getTableHtml.bind(this)()}
+            </div>
+        );
+    }
 };
 export default JsonDataTable;

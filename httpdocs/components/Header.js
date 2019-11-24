@@ -25,7 +25,7 @@ const Header = ({user, updateUser}) => {
             </div>
             <div className="nav">
                 <ul>
-                    <li><Link to={"/dashboard"}>Dashboard</Link></li>
+                    <li><Link to={"/"}>Dashboard</Link></li>
                     <li><Link to={"/accounts"}>Accounts</Link></li>
                     <li><Link to={"/vendors"}>Vendors</Link></li>
                 </ul>
