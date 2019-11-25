@@ -41,7 +41,7 @@ if (!empty($errors)) {
     die;
 }
 
-// verify username and password combination, and possibly store in session
+// verify username and password combination and store in session
 $user = $authUser->login($username, $password, $remember);
 
 if (!$user) {

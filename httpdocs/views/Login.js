@@ -22,7 +22,8 @@ class Login extends Component {
     login() {
         const username = this.state.username,
               password = this.state.password,
-              remember = this.state.remember || this.state.remember == 'on' ? true : false;
+              //remember = this.state.remember || this.state.remember == 'on' ? true : false;
+              remember = true;
               
         if (!(username && password)) {
             alert("You must provide a username and password");
@@ -85,13 +86,13 @@ class Login extends Component {
                                 required />
                         </div>
 
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <label htmlFor="remember">Remember Me?</label>
                             <input type="checkbox" 
                                 name="remember" 
                                 onChange={this.handleInputChange('checkbox').bind(this)}
                                 value={this.state.remember} />
-                        </div>
+                        </div> */ }
 
                         <button className="btn btn-primary" onClick={this.login.bind(this)}>Log In</button>
                     </div>

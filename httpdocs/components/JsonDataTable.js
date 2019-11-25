@@ -335,7 +335,7 @@ class JsonDataTable extends React.Component {
                     </select>
                 </div>
                 <div key={'json-search-input--div'} className="col-md-4 form-group">
-                    <label htmlFor="selectColumnWhereMatches">Matches:</label>
+                    <label htmlFor="selectColumnWhereMatches">Contains:</label>
                     <input type="text" className="form-control"
                         placeholder="Enter value" 
                         name="selectColumnWhereMatches" 
@@ -355,7 +355,7 @@ class JsonDataTable extends React.Component {
                                 onClick={that.removeWhereFilter(i).bind(this)}>
                                 <FontAwesomeIcon icon={faTrashAlt} />
                             </span>
-                            {item.column + ' MATCHES EXACTLY ' + item.value}
+                            {item.column + ' CONTAINS ' + item.value}
                         </div>));
                     })(this.state.whereColumns)}
                 </div>

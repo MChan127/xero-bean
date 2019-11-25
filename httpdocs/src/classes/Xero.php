@@ -49,29 +49,29 @@ class Xero {
 
         // use cache to avoid calling API repeatedly
         $cache = \Cache::getInstance();
-        if ($refresh === true) {
+        //if ($refresh === true) {
             $cache->delete($cacheKey);
-        }
+        //}
         if (!$cached = $cache->get($cacheKey)) {
             try {
                 $request = $this->_xero->load($this->dataType);
 
                 // apply filters if any
                 if (!empty($filters)) {
+                    $order_vals = null;
+
                     foreach ($filters as $key => $val) {
                         if ($key === 'columns') {
                             // columns are filtered manually after fetching data since API doesn't support that feature
                             continue;
 
-                        // implementation is as per the API/library itself, but there's a nuance/sorting doesn't
-                        // seem to work too well
                         } else if ($key === 'order') {
                             // check for proper order query
                             $order_vals = explode(',', $val);
                             if (count($order_vals) < 2 || !in_array($order_vals[1], ['ASC', 'DESC'])) {
                                 continue;
                             }
-                            $request = $request->orderBy($order_vals[0], $order_vals[1]);
+                            //var_dump($order_vals); die;
 
                         // note: fromDate and toDate aren't working at the moment 11/24/2019
                         // https://github.com/calcinai/xero-php/issues/309
@@ -90,9 +90,15 @@ class Xero {
                         //         continue;
                         //     }
                         } else {
-                            $request = $request->where($key, $val);
+                            // $request = $request->where($key, $val);
+                            // Found a way to do partial match
+                            // https://github.com/calcinai/xero-php/issues/385
+                            $request = $request->where($key . '.Contains("' . $val . '")');
                         }
                     }
+                }
+                if ($order_vals) {
+                    $request = $request->orderBy($order_vals[0],  $order_vals[1]);
                 }
 
                 $data = $request->execute();
@@ -149,11 +155,15 @@ class Xero {
     }
 
     public function processData($rawData, $filters = null) {
+        // copy the data to convert it to an array
         $data = json_decode(json_encode($rawData), true);
+        // copy the data again for the purpose of sorting it without
+        // affecting the original order
+        $sortedData = json_decode(json_encode($data), true);
         $columns = [];
 
         // sort from rows with _most columns_ of data to the least
-        usort($data, function($a, $b) {
+        usort($sortedData, function($a, $b) {
             $aCount = count(array_keys($a));
             $bCount = count(array_keys($b));
             if ($aCount == $bCount) {
@@ -165,9 +175,9 @@ class Xero {
         // the first item now has the most columns with data
         // iterate through only the first item, and make an array
         // of all the distinct columns in the entire data
-        foreach ($data[0] as $key => $value) {
+        foreach ($sortedData[0] as $key => $value) {
             // filter columns
-            if (!empty($filters['columns'] && in_array($key, $filters['columns']))) {
+            if (!empty($filters['columns']) && in_array($key, $filters['columns'])) {
                 continue;
             }
 

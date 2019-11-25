@@ -4,9 +4,6 @@
  * User singleton which keeps track of the logged in user
  * 
  * Also provides methods to login, logout, and to fetch/store a user from the session
- * 
- * If the user has opted to be "remembered", a special token is used to compare with the
- * one in the database to verify the user
  */
 class AuthUser {
     private static $authInstance;
@@ -35,10 +32,10 @@ class AuthUser {
      * to see if they're still logged in and populates the singleton variable
      */
     public function initUser() {
-        $user = $_SESSION['user'] ?? null;
-        if (!$user) { 
-            $user = $this->getUserFromSession();
-        }
+        // $user = $_SESSION['user'] ?? null;
+        // if (!$user) { 
+        $user = $this->getUserFromSession();
+        // }
         if ($user) {
             $this->setUser($user);
         }
@@ -53,13 +50,13 @@ class AuthUser {
         // sanitize
         $user['username'] = $htmlSanitizer->sanitize($user['username']);
 
-        $_SESSION['user'] = $user;
+        // $_SESSION['user'] = $user;
         $this->user = $user;
     }
 
     /**
-     * for "remember me", compares the special token with the previously stored one
-     * in the database table
+     * to keep track of the user, compares the special token in their session with the
+     * the one associated with their user in the database table
      */
     public function getUserFromSession() {
         if (!empty($token = $_SESSION['usertoken'])) {
