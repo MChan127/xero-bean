@@ -25,7 +25,7 @@ class Xero {
         $this->_xero = new PrivateApplication($config);
     }
     
-    public function getData($refresh = null) {
+    public function getData($refresh = null, $export = false) {
         $filters = null;
 
         // check if request has any filters 
@@ -33,6 +33,7 @@ class Xero {
         unset($filters['type']);
         unset($filters['debug']);
         unset($filters['refresh']);
+        unset($filters['download']);
         if (!empty($filters)) {
             $cacheKey = sprintf("%s_%s", str_replace('\\', '_', $this->dataType), preg_replace('/[^A-Za-z0-9\-]/', '_', $_SERVER['QUERY_STRING']));
 
@@ -45,9 +46,9 @@ class Xero {
 
         // use cache to avoid calling API repeatedly
         $cache = \Cache::getInstance();
-        //if ($refresh === true) {
+        if ($refresh === true) {
             $cache->delete($cacheKey);
-        //}
+        }
         if (!$cached = $cache->get($cacheKey)) {
             try {
                 $request = $this->_xero->load($this->dataType);
@@ -102,7 +103,7 @@ class Xero {
             } catch (BadRequestException $exception) {
                 return array(
                     'status' => 'error',
-                    'errors' => 'Value is incompatible with column being filtered'
+                    'errors' => "One or more values are incompatible with their columns being filtered.\nPlease remove some filters and try again"
                 );
             }
 
@@ -117,20 +118,28 @@ class Xero {
             $columns = $cached['columns'];
         }
 
-        if (isset($_GET['debug'])) {
-            echo '<pre>' . json_encode($columns, JSON_PRETTY_PRINT) . '</pre><br/><br/>';
-            echo '<pre>' . json_encode($data, JSON_PRETTY_PRINT) . '</pre>';
-            die;
-        }
+        // if (isset($_GET['debug'])) {
+        //     echo '<pre>' . json_encode($columns, JSON_PRETTY_PRINT) . '</pre><br/><br/>';
+        //     echo '<pre>' . json_encode($data, JSON_PRETTY_PRINT) . '</pre>';
+        //     die;
+        // }
 
-        return array(
-            'status' => 'success',
-            'msg' => !is_null($page) ?
-                sprintf('Data was successfully fetched for page %s of %s data type', $page, $this->dataType) :
-                sprintf('Data was successfully fetched for %s data type', $this->dataType),
-            'data' => $data,
-            'columns' => $columns
-        );
+        if ($export === true) {
+
+            $this->downloadToCsv($data, $columns);
+
+        } else {
+
+            return array(
+                'status' => 'success',
+                'msg' => !is_null($page) ?
+                    sprintf('Data was successfully fetched for page %s of %s data type', $page, $this->dataType) :
+                    sprintf('Data was successfully fetched for %s data type', $this->dataType),
+                'data' => $data,
+                'columns' => $columns
+            );
+
+        }
     }
 
     public function processData($rawData, $filters = null) {
@@ -212,5 +221,21 @@ class Xero {
         }
 
         return array($finalData, $columns);
+    }
+
+    public function downloadToCsv($data, $columns) {
+        header('Content-type: application/csv');
+
+        $filename = sprintf('%s_%s', get_class($this), md5(date('ymdhis') . uniqid())) . '.csv';
+        header("Content-Disposition: attachment; filename=$filename");
+
+        $fp = fopen('php://output', 'r+');
+
+        fputcsv($fp, $columns);
+        foreach ($data as $item) {
+            fputcsv($fp, $item);
+        }
+        fclose($fp);
+        die;
     }
 }

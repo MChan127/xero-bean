@@ -132,9 +132,8 @@ input[name="remember"][type="checkbox"] {
     margin-bottom: 25px;
 }
 
-.sync-xero-data {
-    height: 45px;
-    width: 45px;
+.sync-xero-data,
+.download-to-csv {
     border-radius: 5px;
     border: 1px solid #b3b3b3;
     display: flex;
@@ -151,6 +150,19 @@ input[name="remember"][type="checkbox"] {
         background-color: rgb(212, 212, 212);
     }
 }
+.sync-xero-data {
+    height: 45px;
+    width: 45px;
+}
+.download-to-csv {
+    padding: 10px;
+    display: inline-block;
+    font-size: 16px;
+
+    & svg {
+        margin-left: 10px;
+    }
+}
 
 .json-sort {
     margin-top: 20px;
@@ -161,6 +173,18 @@ input[name="remember"][type="checkbox"] {
     align-items: center;
     position: relative;
     top: 6px;
+}
+
+.json-where-filter--item {
+    margin: 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    font-size: 16px;
+    
+    & .remove-where-filter-btn {
+        margin-right: 15px;
+        cursor: pointer;
+    }
 }
 
 /* 

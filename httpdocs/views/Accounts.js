@@ -21,35 +21,38 @@ class Accounts extends Component {
         this.fetchXeroData().bind(this)();
     }
 
-    fetchXeroData(refresh = false) {
+    fetchXeroData(refresh = false, downloadCsv = false) {
         return function(filters = '') {
             const that = this;
 
-            fetchData();
-
-            function fetchData() {
-                axiosGet(
-                    API_URL + "get_xero_data.php?type=accounts" + (typeof filters == 'string' ? filters : '') + (refresh ? "&refresh=true" : ""),
-                    (res, errorHandler) => {
-                        if (!res.data) {
-                            errorHandler("Error: Could not fetch accounts");
-                            return;
-                        }
-                        
-                        if (filters.trim().length > 0) {
-                            // keep the master column list the same if we're just filtering
-                            that.setState({
-                                data: res.data.data,
-                            });
-                        } else {
-                            that.setState({
-                                data: res.data.data,
-                                columns: res.data.columns,
-                            });
-                        }
-                    }
-                );
+            if (downloadCsv) {
+                window.location.href = API_URL + "get_xero_data.php?type=accounts" + (typeof filters == 'string' ? filters : '') 
+                + (refresh ? "&refresh=true" : "") + "&download=true";
+                return;
             }
+
+            axiosGet(
+                API_URL + "get_xero_data.php?type=accounts" + (typeof filters == 'string' ? filters : '') 
+                    + (refresh ? "&refresh=true" : ""),
+                (res, errorHandler) => {
+                    if (!res.data) {
+                        errorHandler("Error: Could not fetch accounts");
+                        return;
+                    }
+
+                    if (filters.trim().length > 0) {
+                        // keep the master column list the same if we're just filtering
+                        that.setState({
+                            data: res.data.data,
+                        });
+                    } else {
+                        that.setState({
+                            data: res.data.data,
+                            columns: res.data.columns,
+                        });
+                    }
+                }
+            );
         };
     }
 
@@ -63,6 +66,7 @@ class Accounts extends Component {
                     columns={this.state.columns} 
                     refetch={this.fetchXeroData().bind(this)} 
                     refresh={this.fetchXeroData(true).bind(this)}
+                    downloadCsv={this.fetchXeroData(false, true).bind(this)}
                     name="Accounts" />
             </div>
         );

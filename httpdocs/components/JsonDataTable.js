@@ -2,7 +2,7 @@ import React, {Component, useEffect} from "react";
 import ReactDOM from "react-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt, faSync } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faSync, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 class JsonDataTable extends React.Component {
     constructor(props) {
@@ -139,7 +139,7 @@ class JsonDataTable extends React.Component {
         };
     }
 
-    filterData() {
+    filterData(download = false) {
         let where = '', hide = '',
             whereColumns = this.state.whereColumns ? this.state.whereColumns : [],
             hideColumns = this.state.hideColumns ? this.state.hideColumns : [],
@@ -161,15 +161,25 @@ class JsonDataTable extends React.Component {
         //     alert("You must set at least one search criteria");
         //     return;
         // }
+
+        if (typeof download === 'boolean' && download === true) {
+            this.props.downloadCsv(filters);
+        } else {
         
-        const that = this;
-        this.setState({
-            hiddenColumns: this.state.hideColumns,
-            loading: true,
-            noResults: false,
-        }, () => {
-            that.props.refetch(filters);
-        });
+            const that = this;
+            this.setState({
+                hiddenColumns: this.state.hideColumns,
+                loading: true,
+                noResults: false,
+            }, () => {
+                that.props.refetch(filters);
+            });
+
+        }
+    }
+
+    downloadCsv() {
+        this.filterData.bind(this)(true);
     }
 
     handleInputChange(type = 'text') {
@@ -294,7 +304,8 @@ class JsonDataTable extends React.Component {
 
                 <div key={'json-where-filters'} className="col-md-6">
                     {(function(filters) {
-                        return filters.map((item, i) => (<div key={'json-where-filter--' + i}>
+                        return filters.map((item, i) => (<div key={'json-where-filter--' + i} 
+                            className="json-where-filter--item">
                             <span className="remove-where-filter-btn"
                                 onClick={that.removeWhereFilter(i).bind(this)}>
                                 <FontAwesomeIcon icon={faTrashAlt} />
@@ -367,6 +378,12 @@ class JsonDataTable extends React.Component {
                 </div>
 
                 {this.getTableFilterOptions.bind(this)()}
+
+                <div className="container">
+                    <div className="download-to-csv" onClick={this.downloadCsv.bind(this)}>
+                        <span>Download View to CSV</span><FontAwesomeIcon icon={faDownload} />
+                    </div>
+                </div>
 
                 {
                     (this.state.tableHtml && !this.state.loading) ? this.state.tableHtml :

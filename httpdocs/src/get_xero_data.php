@@ -32,7 +32,7 @@ if (empty($xero)) {
     ));
 }
 
-$results = $xero->getData($_GET['refresh'] === 'true' ?? null);
+$results = $xero->getData($_GET['refresh'] === 'true' ?? null, $_GET['download'] === 'true' ?? null);
 if ($results['status'] == 'error') {
     http_response_code(500);
 }
