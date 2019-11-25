@@ -49,9 +49,9 @@ class Xero {
 
         // use cache to avoid calling API repeatedly
         $cache = \Cache::getInstance();
-        if ($refresh === true) {
+        // if ($refresh === true) {
             $cache->delete($cacheKey);
-        }
+        // }
         if (!$cached = $cache->get($cacheKey)) {
             try {
                 $request = $this->_xero->load($this->dataType);
@@ -93,7 +93,7 @@ class Xero {
                             // $request = $request->where($key, $val);
                             // Found a way to do partial match
                             // https://github.com/calcinai/xero-php/issues/385
-                            $request = $request->where($key . '.Contains("' . $val . '")');
+                            $request = $request->where($key . ' != null AND ' . $key . '.Contains("' . $val . '")');
                         }
                     }
                 }
@@ -115,7 +115,8 @@ class Xero {
             } catch (BadRequestException $exception) {
                 return array(
                     'status' => 'error',
-                    'errors' => "One or more values are incompatible with their columns being filtered.\nPlease remove some filters and try again"
+                    //'errors' => "One or more values are incompatible with their columns being filtered.\nPlease remove some filters and try again"
+                    'errors' => $exception->getMessage()
                 );
             }
 

@@ -289,6 +289,13 @@ class JsonDataTable extends React.Component {
         let filterWhere = [];
         let sortOrder = [];
 
+        // fields that, for one reason or another, cannot be searched using the ".Contains" syntax in the
+        // where() method
+        // some of these fields are booleans are require a different syntax/extension to the filter module
+        const unsearchableFields = ["ContactID","Addresses","Phones","IsSupplier","IsCustomer",
+        "UpdatedDateUTC","Balances","HasAttachments","EnablePaymentsToAccount",
+        "ShowInExpenseClaims","AccountID"];
+
         // select all and deselect all options
         filterCheckboxes.push((
             <div key="show-all-columns-btn" className="show-all-columns-btn col-md-3 col-sm-6">
@@ -315,9 +322,11 @@ class JsonDataTable extends React.Component {
                 </div>
             ));
 
-            filterWhere.push(
-                <option key={'json-search-option-' + key} value={key}>{key}</option>
-            );
+            if (unsearchableFields.indexOf(key) < 0) {
+                    filterWhere.push(
+                        <option key={'json-search-option-' + key} value={key}>{key}</option>
+                    );
+                }
             sortOrder.push(
                 <option key={'json-sort-option-' + key} value={key}>{key}</option>
             );
