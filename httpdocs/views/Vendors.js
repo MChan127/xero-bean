@@ -6,9 +6,6 @@ import {axiosGet} from "../util/global.js";
 import Header from "../components/Header";
 import JsonDataTable from "../components/JsonDataTable";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync } from '@fortawesome/free-solid-svg-icons';
-
 class Vendors extends Component {
     constructor(props) {
         super(props);
@@ -25,33 +22,30 @@ class Vendors extends Component {
     }
 
     fetchXeroData(refresh = false) {
-        return function() {
+        return function(filters = '') {
             const that = this;
 
-            if (this.state.data && Object.keys(this.state.data).length > 0) {
-                this.setState({
-                    data: {},
-                    columns: []
-                }, fetchData);
-            } else {
-                fetchData();
-            }
+            axiosGet(
+                API_URL + "get_xero_data.php?type=vendors" + (typeof filters == 'string' ? filters : '') + (refresh ? "&refresh=true" : ""),
+                (res, errorHandler) => {
+                    if (!res.data) {
+                        errorHandler("Error: Could not fetch vendors");
+                        return;
+                    }
 
-            function fetchData() {
-                axiosGet(
-                    API_URL + "get_xero_data.php?type=vendors" + (refresh ? "&refresh=true" : ""),
-                    (res, errorHandler) => {
-                        if (!res.data) {
-                            errorHandler("Error: Could not fetch vendors");
-                            return;
-                        }
+                    if (filters.trim().length > 0) {
+                        // keep the master column list the same if we're just filtering
+                        that.setState({
+                            data: res.data.data,
+                        });
+                    } else {
                         that.setState({
                             data: res.data.data,
                             columns: res.data.columns,
                         });
                     }
-                );
-            }
+                }
+            );
         };
     }
 
@@ -61,14 +55,11 @@ class Vendors extends Component {
                 <Header user={this.props.user} updateUser={this.props.updateUser} />
                 <h1>Vendors</h1>
 
-                <div className="sync-xero-data" onClick={this.fetchXeroData(true).bind(this)}>
-                    <FontAwesomeIcon icon={faSync} />
-                </div>
-                {
-                    this.state.data && Object.keys(this.state.data).length > 0 ? 
-                    <JsonDataTable data={this.state.data} columns={this.state.columns} refetch={this.fetchXeroData().bind(this)} name="Vendors" /> :
-                    <div className="loading-animation"><div className="lds-circle"><div></div></div></div>
-                }
+                <JsonDataTable data={this.state.data} 
+                    columns={this.state.columns} 
+                    refetch={this.fetchXeroData().bind(this)} 
+                    refresh={this.fetchXeroData(true).bind(this)}
+                    name="Vendors" />
             </div>
         );
     }

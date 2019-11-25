@@ -1,5 +1,6 @@
 <?php
 use XeroPHP\Application\PrivateApplication;
+use XeroPHP\Remote\Exception\BadRequestException;
 
 class Xero {
     private $config;
@@ -44,9 +45,9 @@ class Xero {
 
         // use cache to avoid calling API repeatedly
         $cache = \Cache::getInstance();
-        if ($refresh === true) {
+        //if ($refresh === true) {
             $cache->delete($cacheKey);
-        }
+        //}
         if (!$cached = $cache->get($cacheKey)) {
             try {
                 $request = $this->_xero->load($this->dataType);
@@ -59,26 +60,28 @@ class Xero {
                             continue;
                         } else if ($key === 'order') {
                             // check for proper order query
-                            if (!in_array($val, ['ASC', 'DESC'])) {
+                            $order_vals = explode(',', $val);
+                            if (count($order_vals) < 2 || !in_array($order_vals[1], ['ASC', 'DESC'])) {
                                 continue;
                             }
-                            $request = $request->orderBy($key, $val);
+                            $request = $request->orderBy($order_vals[0], $order_vals[1]);
 
                         // note: fromDate and toDate aren't working at the moment 11/24/2019
-                        } else if ($key === 'fromDate') {
-                            $dateTime = DateTime::createFromFormat('Y-m-d', $val);
-                            if ($dateTime) {
-                                $request = $request->fromDate($dateTime);
-                            } else {
-                                continue;
-                            }
-                        } else if ($key === 'toDate') {
-                            $dateTime = DateTime::createFromFormat('Y-m-d', $val);
-                            if ($dateTime) {
-                                $request = $request->toDate($dateTime);
-                            } else {
-                                continue;
-                            }
+                        // https://github.com/calcinai/xero-php/issues/309
+                        // } else if ($key === 'fromDate') {
+                        //     $dateTime = DateTime::createFromFormat('Y-m-d', $val);
+                        //     if ($dateTime) {
+                        //         $request = $request->fromDate($dateTime);
+                        //     } else {
+                        //         continue;
+                        //     }
+                        // } else if ($key === 'toDate') {
+                        //     $dateTime = DateTime::createFromFormat('Y-m-d', $val);
+                        //     if ($dateTime) {
+                        //         $request = $request->toDate($dateTime);
+                        //     } else {
+                        //         continue;
+                        //     }
                         } else {
                             $request = $request->where($key, $val);
                         }
@@ -89,12 +92,17 @@ class Xero {
             } catch (NotFoundException $exception) {
                 return array(
                     'status' => 'error',
-                    'msg' => 'Could not fetch data'  
+                    'errors' => 'Could not fetch data'  
                 );
             } catch (RateLimitExceededException $exception) {
                 return array(
                     'status' => 'error',
-                    'msg' => 'Rate limit exceeded'  
+                    'errors' => 'Rate limit exceeded'  
+                );
+            } catch (BadRequestException $exception) {
+                return array(
+                    'status' => 'error',
+                    'errors' => 'Value is incompatible with column being filtered'
                 );
             }
 
