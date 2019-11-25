@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Switch, Route} from "react-router-dom";
+import {Switch, Route, Redirect} from "react-router-dom";
 import Login from "./views/Login";
 import Dashboard from "./views/Dashboard";
 import Accounts from "./views/Accounts";
@@ -15,6 +15,9 @@ const Router = ({user, updateUser}) => {
             <Switch>
                 <Route exact path={"/"} component={() => {
                     return (<Login updateUser={updateUser} />);
+                }} />
+                <Route path={"*"} component={() => {
+                    return (<Redirect to="/" />);
                 }} />
             </Switch>
         );

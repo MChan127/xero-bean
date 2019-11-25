@@ -3,6 +3,10 @@ import ReactDOM from "react-dom";
 
 import {axiosPost} from "../util/global.js";
 
+/**
+ * Login screen. Basic forms and AJAX call to login the user. If they're already logged in,
+ * the router will redirect them to the dashboard component instead.
+ */
 class Login extends Component {
     constructor(props) {
         super(props);

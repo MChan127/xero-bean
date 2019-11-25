@@ -1,10 +1,21 @@
 import axios, {get, post} from "axios";
 
-const handleError = function(err) {
-    if (Array.isArray(err)) {
-        alert(err.join('\n'));
+const handleError = function(rawError) {
+    let errData = null;
+    if (rawError.response && (errData = rawError.response.data)) {
+        // if noauth parameter, redirect because the user isn't logged in
+        if (errData.noauth == true) {
+            window.location.replace('/');
+            return;   
+        }
+
+        errData = rawError.response.data.errors ? rawError.response.data.errors : rawError;
+    }
+
+    if (Array.isArray(errData)) {
+        alert(errData.join('\n'));
     } else {
-        alert(err);
+        alert(errData);
     }
 };
 
@@ -14,9 +25,9 @@ const axiosGet = function(url, callback) {
     ).then(res => {
         callback(res, handleError);
     }, err => {
-        handleError(!err.response && err.response.data ? err : err.response.data.errors);
+        handleError(err);
     }).catch(err => {
-        handleError(!err.response && err.response.data ? err : err.response.data.errors);
+        handleError(err);
     })
 };
 
@@ -34,9 +45,9 @@ const axiosPost = function(url, data, callback) {
     ).then(res => {
         callback(res, handleError);
     }, err => {
-        handleError(err.response && err.response.data ? err.response.data.errors : err);
+        handleError(err);
     }).catch(err => {
-        handleError(err.response && err.response.data ? err.response.data.errors : err);
+        handleError(err);
     })
 };
 

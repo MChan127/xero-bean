@@ -2,6 +2,11 @@
 use Phpfastcache\CacheManager;
 use Phpfastcache\Config\ConfigurationOption;
 
+/**
+ * Custom cache class which uses PHPFastCache for caching data in the filesystem
+ * 
+ * Simple functions to get, set, and delete items from the cache
+ */
 class Cache {
     private static $cache;
     private $_cacheInstance;

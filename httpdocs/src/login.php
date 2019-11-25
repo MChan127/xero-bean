@@ -4,7 +4,13 @@ require_once 'common.php';
 $post = getPostData();
 
 // verify POST request, and that user not logged in already
-if (!isset($post) || !empty($authUser->getUser())) {
+if (!empty($user = $authUser->getUser())) {
+    // already logged in
+    echoJsonData(array(
+        'user' => $user
+    ));
+}
+if (!isset($post)) {
     http_response_code(401);
     die;
 }
@@ -39,7 +45,7 @@ if (!empty($errors)) {
 $user = $authUser->login($username, $password, $remember);
 
 if (!$user) {
-    http_response_code(500);
+    http_response_code(403);
     echoJsonData(array(
         'errors' => array('The username and/or password are invalid')
     ));

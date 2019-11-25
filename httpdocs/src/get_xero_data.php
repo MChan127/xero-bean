@@ -5,7 +5,8 @@ require_once 'common.php';
 if (!$authUser || !$authUser->getUser()) {
     http_response_code(403);
     echoJsonData(array(
-        'error' => 'You must be authorized to call this API'
+        'noauth' => true,
+        'errors' => 'You must be a logged in user to fetch/view data'
     ));
 }
 

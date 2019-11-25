@@ -6,6 +6,13 @@ import {axiosGet} from "../util/global.js";
 import Header from "../components/Header";
 import JsonDataTable from "../components/JsonDataTable";
 
+/**
+ * The Vendors and Accounts modules are virtually identical save for their data type being fetched.
+ * 
+ * Basically houses the API call to fetch Xero data and the JsonDataTable component. But a future
+ * possible refactor might move the API logic entirely into the child component instead. This module can
+ * then concern itself more with UI or features more specific to accounts, vendors, etc.
+ */
 class Vendors extends Component {
     constructor(props) {
         super(props);

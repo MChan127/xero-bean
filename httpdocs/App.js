@@ -7,6 +7,9 @@ import './assets/app.scss';
 
 import Router from "./Router";
 
+/**
+ * Initializes the React app.
+ */
 class App extends Component {
     constructor(props) {
         super(props);
@@ -18,6 +21,11 @@ class App extends Component {
     }
 
     updateUser(user) {
+        if (user === null) {
+            // logging out, so redirect
+            window.location.replace('/');
+            return;
+        }
         this.setState({user});
     }
 

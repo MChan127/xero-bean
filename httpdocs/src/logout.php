@@ -9,11 +9,6 @@ if (!isset($post) || empty($authUser->getUser())) {
     die;
 }
 
-// if (empty($post['userid']) || !intval($post['userid'])) {
-//     http_response_code(401);
-//     die;
-// }
-
 $authUser->logout();
 
 echoJsonData(array(

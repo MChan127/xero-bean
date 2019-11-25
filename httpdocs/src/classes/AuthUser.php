@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * User singleton which keeps track of the logged in user
+ * 
+ * Also provides methods to login, logout, and to fetch/store a user from the session
+ * 
+ * If the user has opted to be "remembered", a special token is used to compare with the
+ * one in the database to verify the user
+ */
 class AuthUser {
     private static $authInstance;
 
@@ -22,6 +30,10 @@ class AuthUser {
         $this->initUser();
     }
 
+    /**
+     * for each PHP session (particularly ajax requests), checks the user's session 
+     * to see if they're still logged in and populates the singleton variable
+     */
     public function initUser() {
         $user = $_SESSION['user'] ?? null;
         if (!$user) { 
@@ -45,6 +57,10 @@ class AuthUser {
         $this->user = $user;
     }
 
+    /**
+     * for "remember me", compares the special token with the previously stored one
+     * in the database table
+     */
     public function getUserFromSession() {
         if (!empty($token = $_SESSION['usertoken'])) {
             $user = $this->_db->get(
@@ -62,9 +78,11 @@ class AuthUser {
     public function login($username, $password, $remember = false) {
         $user = $this->_db->get("SELECT * FROM `users` WHERE `username` = ?;", array($username));
 
+        // verify not logged in already
         if (!empty($user)) {
             $user = $user[0];
             $password_hash = $user['password_hash'];
+            // bcrypt for hashing
             if (!password_verify($password, $password_hash)) {
                 return false;
             }
@@ -93,6 +111,8 @@ class AuthUser {
             $this->_db->run("DELETE FROM `user_sessions` WHERE `user_id` = ?;", array($this->user['id']));
             $this->user = null;
         }
+        session_unset($_SESSION['user']);
+        session_unset($_SESSION['usertoken']);
         session_destroy();
     }
 }

@@ -1,4 +1,11 @@
 <?php
+
+/**
+ * Utility class for connecting to a MySQL database
+ * 
+ * SQL parameterization is handled and methods can be called to interact
+ * with the database in a straightforward way
+ */
 class DbConnection {
     private static $DbConnection;
 
@@ -36,6 +43,12 @@ class DbConnection {
         );
     }
 
+    /**
+     * the bread and butter prepare() method that uses parameterized queries to talk to the table
+     * 
+     * sometimes MySQL is finicky about types of data being bound, so $intValues lets us leverage the
+     * PDO::PARAM_INT flag to force an integer type as a parameter, if needed
+     */
     public function prepare($query, $params = array(), $intValues = array(), $fetch = true) {
         try {
             $handle = $this->_db->prepare($query);
@@ -78,6 +91,9 @@ class DbConnection {
         return $return_results;
     }
 
+    /**
+     * general purpose method to run anything against MySQL
+     */
     public function run($query, $params = array()) {
         return $this->prepare($query, $params, array(), false);
     }
@@ -87,7 +103,7 @@ class DbConnection {
         if (!$result) return false;
 
         try {
-            $get_id = $this->_id->prepare("SELECT LAST_INSERT_ID();");
+            $get_id = $this->_db->prepare("SELECT LAST_INSERT_ID();");
             $get_id->execute();
             $get_id = $get_id->fetch();
         } catch (Exception $e) {

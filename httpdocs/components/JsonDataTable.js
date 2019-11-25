@@ -4,13 +4,23 @@ import ReactDOM from "react-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt, faSync, faDownload } from '@fortawesome/free-solid-svg-icons';
 
+/**
+ * Takes in JSON data through props and renders it in a table
+ * Also has functions to retrigger the API call to fetch data, based on the user
+ * setting search criteria/filter options, refreshing, download csv, etc.
+ * 
+ */
 class JsonDataTable extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             ...this.state,
-            hiddenColumns: [], // from the last filter
+            /* 
+                keeps track of the hidden columns from the last filtered search 
+                in order to hide columns on the UI
+            */
+            hiddenColumns: [],
             hideColumns: [],
             whereColumns: [],
             selectColumnWhere: null,
@@ -18,11 +28,23 @@ class JsonDataTable extends React.Component {
             selectSortColumn: null,
             selectSortOrder: null,
             tableHtml: this.getTableHtml.bind(this)(),
+            /* 
+                loading animation displays as a result of either tableHtml being empty
+                or loading = true 
+            */
             loading: true,
+            /*
+                noResults is set to true when after a filtered search (not the initial load)
+                and if the data is empty
+            */
             noResults: false,
         };
     }
 
+    /**
+     * updates the table whenever new data comes through
+     * or if there's no data, display the "no results" message
+     */
     componentWillReceiveProps(newProps) {
         if (newProps.data && Object.keys(newProps.data).length > 0 && !this.state.noResults) {
             this.getTableHtml.bind(this)(newProps);
@@ -33,15 +55,14 @@ class JsonDataTable extends React.Component {
         }
     }
 
+    /**
+     * generates the html table based on the given data, whether from the initial props
+     * or new data from a filtered search coming through as an argument
+     */
     getTableHtml(newProps = null) {
         let tableHeaderHtml = [];
         let tableRowsHtml = [];
         
-        // let data = newData && Object.keys(newData).length > 0 ? newData : this.props.data;
-        // columns are more complicated since they're not meant to change
-        // console.log('old props', this.props.columns);
-        // let columns = newColumns && Object.keys(newColumns).length > 0 ? newColumns : this.props.columns;
-        // console.log('get table html', data, columns);
         let {data, columns} = newProps ? newProps : this.props;
 
         if (!data || Object.keys(data).length < 1) {
@@ -94,6 +115,9 @@ class JsonDataTable extends React.Component {
         });
     }
 
+    /**
+     * links state to checkboxes
+     */
     toggleColumn(name) {
         return function(event) {
             if (!event.target.checked) {
@@ -114,6 +138,10 @@ class JsonDataTable extends React.Component {
         };
     }
 
+    /**
+     * for the hide all/show all checkboxes which updates the hideColumns state array
+     * in bulk
+     */
     toggleColumns(hideAll = false) {
         const that = this;
         return function(e) {
@@ -139,6 +167,14 @@ class JsonDataTable extends React.Component {
         };
     }
 
+    /**
+     * takes the current filters in the state (from settings on the UI),
+     * formats them and passes them through to the API function, which generates
+     * a filter search
+     * 
+     * also if download = true, the state is untouched and we call simply AJAX instead
+     * to download a csv, but the filters are still applied
+     */
     filterData(download = false) {
         let where = '', hide = '',
             whereColumns = this.state.whereColumns ? this.state.whereColumns : [],
@@ -182,6 +218,10 @@ class JsonDataTable extends React.Component {
         this.filterData.bind(this)(true);
     }
 
+    /**
+     * generic function to handle state changes through
+     * input through form fields
+     */
     handleInputChange(type = 'text') {
         const that = this;
         return (event) => {
@@ -202,6 +242,9 @@ class JsonDataTable extends React.Component {
         };
     }
 
+    /**
+     * add "where" criteria through input from the UI
+     */
     addWhereFilter() {
         let column = this.state.selectColumnWhere,
             value = this.state.selectColumnWhereMatches;
@@ -235,6 +278,10 @@ class JsonDataTable extends React.Component {
         };
     }
 
+    /**
+     * renders the interface for modifying search criteria, including "where", "order",
+     * and hiding/showing columns
+     */
     getTableFilterOptions() {
         const that = this;
 
@@ -268,14 +315,12 @@ class JsonDataTable extends React.Component {
                 </div>
             ));
 
-            // if (this.state.whereColumns.indexOf(key) < 0) {
             filterWhere.push(
                 <option key={'json-search-option-' + key} value={key}>{key}</option>
             );
             sortOrder.push(
                 <option key={'json-sort-option-' + key} value={key}>{key}</option>
             );
-            // }
         }
         filterWhere = (
             <div className="json-search col-md-12 row">
@@ -359,6 +404,11 @@ class JsonDataTable extends React.Component {
         )   
     }
 
+    /**
+     * reloads the data without any filters
+     * 
+     * the main feature of this is to bypass/clear the cache, so that *new* data can be fetched
+     */
     refresh() {
         const that = this;
         this.setState({

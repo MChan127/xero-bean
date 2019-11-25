@@ -2,6 +2,9 @@
 use XeroPHP\Application\PrivateApplication;
 use XeroPHP\Remote\Exception\BadRequestException;
 
+/**
+ * 
+ */
 class Xero {
     private $config;
 
@@ -59,6 +62,9 @@ class Xero {
                         if ($key === 'columns') {
                             // columns are filtered manually after fetching data since API doesn't support that feature
                             continue;
+
+                        // implementation is as per the API/library itself, but there's a nuance/sorting doesn't
+                        // seem to work too well
                         } else if ($key === 'order') {
                             // check for proper order query
                             $order_vals = explode(',', $val);
@@ -223,6 +229,7 @@ class Xero {
         return array($finalData, $columns);
     }
 
+    // funnels the Xero data into a CSV file and lets the user download it through the browser
     public function downloadToCsv($data, $columns) {
         header('Content-type: application/csv');
 
