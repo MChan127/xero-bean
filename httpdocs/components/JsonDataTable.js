@@ -288,7 +288,7 @@ class JsonDataTable extends React.Component {
                         onChange={this.handleInputChange().bind(this)}
                         required />
                 </div>
-                <div key={'json-search-add--btn'} className="col-md-4">
+                <div key={'json-search-add--btn'} className="json-search-add--btn col-md-4">
                     <button className="btn btn-primary" onClick={this.addWhereFilter.bind(this)}>Add</button>
                 </div>
 
@@ -343,7 +343,7 @@ class JsonDataTable extends React.Component {
                 <div className="row">
                     {filterWhere}
                 </div>
-                <button className="btn btn-success" onClick={this.filterData.bind(this)}>Filter</button>
+                <button className="btn btn-success" onClick={this.filterData.bind(this)}>Apply Filters</button>
             </div>
         )   
     }
@@ -360,8 +360,10 @@ class JsonDataTable extends React.Component {
     render() {
         return (
             <div className={"json-data-table " + this.props.name}>
-                <div className="sync-xero-data" onClick={this.refresh.bind(this)}>
-                    <FontAwesomeIcon icon={faSync} />
+                <div className="container">
+                    <div className="sync-xero-data" onClick={this.refresh.bind(this)}>
+                        <FontAwesomeIcon icon={faSync} />
+                    </div>
                 </div>
 
                 {this.getTableFilterOptions.bind(this)()}

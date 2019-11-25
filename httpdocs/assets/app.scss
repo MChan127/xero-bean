@@ -132,6 +132,37 @@ input[name="remember"][type="checkbox"] {
     margin-bottom: 25px;
 }
 
+.sync-xero-data {
+    height: 45px;
+    width: 45px;
+    border-radius: 5px;
+    border: 1px solid #b3b3b3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 27px;
+    color: green;
+    cursor: pointer;
+    margin-bottom: 20px;
+
+    &:hover {
+        transition: all 0.5s;
+        border-color: #fff;
+        background-color: rgb(212, 212, 212);
+    }
+}
+
+.json-sort {
+    margin-top: 20px;
+}
+
+.json-search-add--btn {
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: 6px;
+}
+
 /* 
     from loading.io/css
     License: CC0
