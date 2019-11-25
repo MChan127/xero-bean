@@ -49,9 +49,9 @@ class Xero {
 
         // use cache to avoid calling API repeatedly
         $cache = \Cache::getInstance();
-        // if ($refresh === true) {
+        if ($refresh === true) {
             $cache->delete($cacheKey);
-        // }
+        }
         if (!$cached = $cache->get($cacheKey)) {
             try {
                 $request = $this->_xero->load($this->dataType);
